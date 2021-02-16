@@ -4,7 +4,8 @@
   "main": "server.js",
   "license": "MIT",
   "scripts": {
-    "dev:server": "nodemon server.js"
+    "dev:server": "nodemon server.js",
+    "test": "jasmine"
   },
   "dependencies": {
     "dotenv": "^8.2.0",
@@ -13,6 +14,8 @@
     "socket.io": "^3.1.1"
   },
   "devDependencies": {
-    "nodemon": "^2.0.7"
+    "jasmine": "^3.6.4",
+    "nodemon": "^2.0.7",
+    "request": "^2.88.2"
   }
 }
