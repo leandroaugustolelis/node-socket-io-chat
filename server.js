@@ -1,3 +1,4 @@
+require('dotenv/config');
 const express = require('express');
 const app = express();
 const http = require('http').Server(app);
@@ -7,7 +8,7 @@ const mongoose = require('mongoose')
 app.use(express.json());
 app.use(express.urlencoded());
 
-const dbUrl = 'mongodb+srv://user:user@learning-node.9wpee.mongodb.net/test'
+const dbUrl = process.env.MONGO_DB_CONNECTION;
 
 const Message = mongoose.model('Message', {
   name: String,
