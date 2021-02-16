@@ -8,6 +8,8 @@ const mongoose = require('mongoose')
 app.use(express.json());
 app.use(express.urlencoded());
 
+mongoose.Promise = Promise
+
 const dbUrl = process.env.MONGO_DB_CONNECTION;
 
 const Message = mongoose.model('Message', {
@@ -22,16 +24,25 @@ app.get('/messages',(req,res) => {
   
 })
 
-app.post('/messages',(req,res) => {
+
+app.post('/messages', async (req,res) => {
   const message = new Message(req.body)
-  message.save((err) => {
-    if(err) {
-      res.status(500)
-    }
-    
-  })
-  io.emit('message', req.body)
-  res.status(200);
+  const savedMessage = await message.save()
+  console.log('saved')
+  const censored = await Message.findOne({message: 'badword'})
+
+  if(censored) {
+    await Message.remove({ _id: censored.id })
+  } else {
+    io.emit('message', req.body)
+  }
+  
+  res.status(200)
+
+// .catch((err) => {
+//     res.status(500)
+//     return console.error(err)
+//   })
 })
 
 app.use(express.static(__dirname, () => {
@@ -42,10 +53,10 @@ io.on('connection', socket => {
   console.log("a user connected")
 })
 
-mongoose.connect(dbUrl, (err) => {
+mongoose.connect(dbUrl, { useUnifiedTopology: true }, (err) => {
   console.log("mongodb connection", err)
 })
 
 const server = http.listen(3000, () => {
   console.log("server is running on port", server.address().port)
-});
+})
